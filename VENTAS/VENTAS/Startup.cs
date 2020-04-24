@@ -16,6 +16,7 @@ using Microsoft.Extensions.Options;
 using VENTAS.Models;
 using AutoMapper;
 using VENTAS.RequestDTO;
+using Newtonsoft.Json;
 
 namespace VENTAS
 {
@@ -28,13 +29,25 @@ namespace VENTAS
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAutoMapper(configuration =>
-            configuration.CreateMap<Categoria,CategoriaDTO>
-                
+            services.AddAutoMapper(configuration => {
+                //Mapper Categorias
+                configuration.CreateMap<Categoria, CategoriaDTO>();
+                configuration.CreateMap<CategoriaCreacionDTO, Categoria>();
+                //Mapper Unidades
+                configuration.CreateMap<UndMedida, UndMedidaDTO>();
+                configuration.CreateMap<UnidadCreacionDTO, UndMedida>();
+
+                //Maper Articulos
+                configuration.CreateMap<Articulo, ArticuloDTO>();
+                configuration.CreateMap<ArticuloCreacionDTO, Articulo>();
+
+
+            },                
                 typeof(Startup));
+
+               
 
             services.AddDbContext<DBSVentasContext>(options => 
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
@@ -57,12 +70,15 @@ namespace VENTAS
                 options.Password.RequireNonAlphanumeric = false;
 
                 options.User.RequireUniqueEmail = true;
-            })
+            }).AddRoles<ApplicationRole>()
+                .AddRoleManager<RoleManager<ApplicationRole>>()
                 .AddEntityFrameworkStores<DBSVentasContext>()
                 .AddDefaultTokenProviders();
-         /*   services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-                .AddNewtonosoftJson(options => options.SerializerSetting.
-            services.AddControllers();*/
+            
+            services.AddControllers().AddNewtonsoftJson(o =>
+            {
+                o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            }); ;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -77,8 +93,11 @@ namespace VENTAS
 
             app.UseRouting();
 
-            app.UseAuthorization();
 
+
+            app.UseAuthentication();
+
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

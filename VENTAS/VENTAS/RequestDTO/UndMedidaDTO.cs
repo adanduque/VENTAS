@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace VENTAS.RequestDTO
 {
-    public class CategoriaDTO
+  
+    public class UndMedidaDTO
     {
         public int Id { get; set; }
         public string Nombre { get; set; }
@@ -14,11 +15,11 @@ namespace VENTAS.RequestDTO
 
     }
 
-    public class CategoriaCreacionDTO
+    public class UnidadCreacionDTO
     {
-        [Required (ErrorMessage ="Ingrese nombre de la categoria")]
+        [Required(ErrorMessage = "Ingrese nombre de la categoria")]
         public string Nombre { get; set; }
-        [MaxLength(ErrorMessage ="Máximo 150 catacteres")]
+        [MaxLength(150,ErrorMessage ="Máximo 150 caracteres")]
         public string Descripcion { get; set; }
 
     }

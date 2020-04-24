@@ -8,5 +8,6 @@ namespace VENTAS.Models
 {
     public class ApplicationRole:IdentityRole
     {
+        public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }
     }
 }

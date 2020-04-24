@@ -1,11 +1,12 @@
 ﻿using System;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace VENTAS.Models
 {
-    public partial class DBSVentasContext : IdentityDbContext<ApplicationUser>
+    public partial class DBSVentasContext : IdentityDbContext<ApplicationUser, ApplicationRole, string, IdentityUserClaim<string>, ApplicationUserRole, IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>>
     {
         public DBSVentasContext()
         {
@@ -15,6 +16,8 @@ namespace VENTAS.Models
             : base(options)
         {
         }
+
+        public virtual DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
         public virtual DbSet<Articulo> Articuloes { get; set; }
         public virtual DbSet<Categoria> Categorias { get; set; }
@@ -247,6 +250,22 @@ namespace VENTAS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_VentaDetalle_Venta");
             });
+
+
+
+            //USER ROLES
+
+            modelBuilder.Entity<ApplicationUserRole>(entity =>
+            {
+                entity.HasOne(e => e.Role)
+                .WithMany(e => e.UserRoles)
+                .HasForeignKey(e => e.RoleId);
+
+                entity.HasOne(e => e.User)
+                .WithMany(e => e.UserRoles)
+                .HasForeignKey(e => e.UserId);
+            });
+
 
             OnModelCreatingPartial(modelBuilder);
         }
